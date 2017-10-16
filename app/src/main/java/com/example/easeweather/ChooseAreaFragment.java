@@ -31,11 +31,13 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static java.security.AccessController.getContext;
+
 /**
  * Created by ZS_PC on 2017/10/10.
  */
 
-public class ChooseAreaFragment  extends Fragment{
+public class ChooseAreaFragment extends Fragment {
     public static final int LEVEL_PROVINCE=0;
     public static final  int LEVEL_CITY=1;
     public static final int LEVEL_COUNTY=2;
@@ -51,6 +53,7 @@ public class ChooseAreaFragment  extends Fragment{
     private Province selectedProvince;   //选中的省份
     private City selectedCity;  //选中的城市
     private int currentLevel;    //选中级别
+    public  int mPosition;
 
 
     @Override
@@ -79,10 +82,17 @@ public class ChooseAreaFragment  extends Fragment{
                     queryCounties();
                 }else if (currentLevel==LEVEL_COUNTY){
                     String weatherId=countyList.get(position).getWeatherId();
+                    mPosition=position;
+                    if (getActivity() instanceof MainActivity){
                     Intent intent=new Intent(getActivity(),WeatherActivity.class);
                     intent.putExtra("weather_id",weatherId);
                     startActivity(intent);
                     getActivity().finish();
+                    }else if (getActivity() instanceof ChooseArea){
+                        ChooseArea chooseArea=(ChooseArea) getActivity();
+                        chooseArea.returnWeatherId(weatherId);
+                        getActivity().finish();
+                    }
                 }
             }
         });
@@ -218,4 +228,10 @@ public class ChooseAreaFragment  extends Fragment{
             progressDialog.dismiss();
         }
     }
+
+    public String seteatherId(){
+        String weatherId=countyList.get(mPosition).getWeatherId();
+        return weatherId;
+    }
+
 }
